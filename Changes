@@ -1,0 +1,11 @@
+Revision history for Perl module Exception::Class::TryCatch
+
+1.00 Wed Dec  8 16:28:37 EST 2004
+    - renamed to Exception::Class::TryCatch (on advice of Dave Rolsky)
+    - minor pod edits
+    
+0.10 Thu Sep  9 10:20:51 EDT 2004
+    - initial public release as Exception::Class::Sugar
+
+0.01 Fri Sep  3 00:09:17 2004
+	- original version; created by ExtUtils::ModuleMaker::TT
