@@ -3,12 +3,15 @@ use Module::Build;
 
 Module::Build->new
     ( module_name     => 'Exception::Class::TryCatch',
+      create_makefile_pl => 'passthrough',
+      create_readme => 1,
       license         => 'perl',	  
       requires        => {
+          perl => 5.005,
           Exception::Class => 1.19,
       },
 	  build_requires  => { 
-          Test::Simple => 0.44,
+          Test::More => 0.54,
           Test::Exception => 0.19,
       },
 	)->create_build_script;

@@ -5,7 +5,7 @@ use blib;
 
 # Exception::Class::TryCatch  
 
-use Test::More tests =>  33 ;
+use Test::More tests =>  37 ;
 use Test::Exception;
 
 BEGIN { 
@@ -94,12 +94,35 @@ catch $err;
 is ( $err, undef, "catch undefs a passed error variable if no error" );
 
 #--------------------------------------------------------------------------#
+# Test try passing through results of eval
+#--------------------------------------------------------------------------#
+
+my $test_val = 23;
+my @test_vals = ( 1, 2, 3 );
+
+my $rv = try eval { return $test_val };
+is( $rv, $test_val, 
+    "try in scalar context passes through result of eval" );
+
+$rv = try eval { return \@test_vals };
+is( $rv, \@test_vals,
+    "try in scalar context passes an array ref as is" );
+
+my @rv = try [ eval { return @test_vals } ];
+is_deeply( \@rv, \@test_vals, 
+    "try in list context dereferences an array ref passed to it" );
+
+@rv = try eval { return $test_val };
+is_deeply( \@rv, [ $test_val ],
+    "try in list context passes through a scalar return" );
+    
+#--------------------------------------------------------------------------#
 # Test simple try/catch
 #--------------------------------------------------------------------------#
 
-my $rv = try eval { My::Exception::Class->throw( "error" ) };
+$rv = try eval { My::Exception::Class->throw( "error" ) };
 catch $err;
-ok ( $rv, "try returns true" );
+is ( $rv, undef, "try gets undef on exception" );
 is ( $err->error, 'error', "simple try/catch works" );
 
 #--------------------------------------------------------------------------#

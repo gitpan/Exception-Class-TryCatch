@@ -2,7 +2,8 @@ Build.PL
 Changes
 lib/Exception/Class/TryCatch.pm
 LICENSE
-MANIFEST
+Makefile.PL
+MANIFEST			This list of files
 META.yml
 README
 t/Exception_Class_TryCatch.t

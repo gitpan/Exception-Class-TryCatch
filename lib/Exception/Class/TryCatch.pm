@@ -7,7 +7,7 @@ use Exception::Class;
 BEGIN {
     use Exporter ();
     use vars qw ($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
-    $VERSION     = "1.00";
+    $VERSION     = "1.01";
     @ISA         = qw (Exporter);
     @EXPORT      = qw ( catch try caught );
     @EXPORT_OK   = ();
@@ -143,20 +143,35 @@ sub catch(;$) {
     };
     catch my $err;
  
+    $rv = try eval { return $scalar };
+    @rv = try [ eval { return @array } ];
+    
 Pushes the current error (C<$@>) onto a hidden error stack for later use by
 C<catch>.  C<try> uses a prototype that expects a single scalar so that it can
 be used with eval without parentheses.  As C<eval { BLOCK }> is an argument
 to try, it will be evaluated just prior to C<try>, ensuring that C<try>
 captures the correct error status.  C<try> does not itself handle any errors --
 it merely records the results of C<eval>. C<try { BLOCK }> will be interpreted
-as passing a hash reference and will (probably) not compile.
+as passing a hash reference and will (probably) not compile. (And if it does,
+it will result in very unexpected behavior.)
 
-C<try> ignores the actual value returned by C<eval> and always returns 1 -- as
-I<trying> is always successful regardless of whether the C<eval> is successful
-or not.  This allows compound idioms like the following:
+Since C<try> requires a single argument, C<eval> will normally be called
+in scalar context.  To use C<eval> in list context with C<try>, put the 
+call to C<eval> in an anonymous array:  
+
+  @rv = try [ eval {return @array} ];
+
+When C<try> is called in list context, if the argument to C<try> is an array
+reference, C<try> will dereference the array and return the resulting list,
+In scalar context, of course, C<try> passes through the scalar value returned
+by C<eval> -- even if that is an array reference -- without modifications.
+
+When using C<try> in a compound idioms like the following, be sure that
+the C<eval> returns a true value:
 
     try eval {
      # code
+     1;
     } and do {
      # cleanup
     };
@@ -204,8 +219,10 @@ be rewritten as:
 =cut
 
 sub try($) {
+    my $v = shift;
     push @error_stack, $@;
-    return 1;   
+    return ref($v) eq 'ARRAY' ? @$v : $v if wantarray;
+    return $v;
 }
 
 
@@ -248,20 +265,21 @@ To install this module, type the following:
 
 =head1 BUGS
 
-Though this is a simple module, it may contain bugs or have unexpected behaviors.
+Though this is a simple module, it may contain bugs or have unexpected
+behaviors.
 
 Please report bugs using the CPAN Request Tracker at
 http://rt.cpan.org/NoAuth/Bugs.html?Dist=Exception-Class-TryCatch
 
 =head1 AUTHOR
 
-David A. Golden (DAGOLDEN), dagolden@dagolden.com
+David A Golden <dagolden@cpan.org>
 
 http://dagolden.com/
 
 =head1 COPYRIGHT
 
-Copyright (c) 2004 by David A. Golden
+Copyright (c) 2004, 2005 by David A. Golden
 
 This program is free software; you can redistribute
 it and/or modify it under the same terms as Perl itself.

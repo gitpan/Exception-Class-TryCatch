@@ -1,18 +1,19 @@
 --- #YAML:1.0
 name: Exception-Class-TryCatch
-version: 1.00
+version: 1.01
 author:
-  - David A. Golden (DAGOLDEN), dagolden@dagolden.com
+  - David A Golden <dagolden@cpan.org>
 abstract: |-
   Syntactic try/catch sugar for use with Exception::Class
 license: perl
 requires:
   Exception::Class: 1.19
+  perl: 5.005
 build_requires:
   Test::Exception: 0.19
-  Test::Simple: 0.44
+  Test::More: 0.54
 provides:
   Exception::Class::TryCatch:
     file: lib/Exception/Class/TryCatch.pm
-    version: 1.00
+    version: 1.01
 generated_by: Module::Build version 0.2606

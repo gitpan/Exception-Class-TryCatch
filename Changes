@@ -1,5 +1,11 @@
 Revision history for Perl module Exception::Class::TryCatch
 
+1.01 Mon Jan 24 22:51:43 EST 2005
+    - changed "try" to return whatever eval returns
+    - try in list context dereferences an array_ref allowing eval to
+      be called in list context by wrapping in an anonymous array
+    - updated build configuration
+    
 1.00 Wed Dec  8 16:28:37 EST 2004
     - renamed to Exception::Class::TryCatch (on advice of Dave Rolsky)
     - minor pod edits

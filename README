@@ -91,6 +91,9 @@ USAGE
         };
         catch my $err;
  
+        $rv = try eval { return $scalar };
+        @rv = try [ eval { return @array } ];
+    
     Pushes the current error ($@) onto a hidden error stack for later use by
     "catch". "try" uses a prototype that expects a single scalar so that it
     can be used with eval without parentheses. As "eval { BLOCK }" is an
@@ -98,14 +101,26 @@ USAGE
     "try" captures the correct error status. "try" does not itself handle
     any errors -- it merely records the results of "eval". "try { BLOCK }"
     will be interpreted as passing a hash reference and will (probably) not
-    compile.
+    compile. (And if it does, it will result in very unexpected behavior.)
 
-    "try" ignores the actual value returned by "eval" and always returns 1
-    -- as *trying* is always successful regardless of whether the "eval" is
-    successful or not. This allows compound idioms like the following:
+    Since "try" requires a single argument, "eval" will normally be called
+    in scalar context. To use "eval" in list context with "try", put the
+    call to "eval" in an anonymous array:
+
+      @rv = try [ eval {return @array} ];
+
+    When "try" is called in list context, if the argument to "try" is an
+    array reference, "try" will dereference the array and return the
+    resulting list, In scalar context, of course, "try" passes through the
+    scalar value returned by "eval" -- even if that is an array reference --
+    without modifications.
+
+    When using "try" in a compound idioms like the following, be sure that
+    the "eval" returns a true value:
 
         try eval {
          # code
+         1;
         } and do {
          # cleanup
         };
@@ -182,12 +197,12 @@ BUGS
     http://rt.cpan.org/NoAuth/Bugs.html?Dist=Exception-Class-TryCatch
 
 AUTHOR
-    David A. Golden (DAGOLDEN), dagolden@dagolden.com
+    David A Golden <dagolden@cpan.org>
 
     http://dagolden.com/
 
 COPYRIGHT
-    Copyright (c) 2004 by David A. Golden
+    Copyright (c) 2004, 2005 by David A. Golden
 
     This program is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself.
