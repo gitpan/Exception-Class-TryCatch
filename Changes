@@ -1,5 +1,8 @@
 Revision history for Perl module Exception::Class::TryCatch
 
+1.02 Wed Mar  9 06:47:58 EST 2005
+    - added pod and pod coverage tests
+
 1.01 Mon Jan 24 22:51:43 EST 2005
     - changed "try" to return whatever eval returns
     - try in list context dereferences an array_ref allowing eval to

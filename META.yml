@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name: Exception-Class-TryCatch
-version: 1.01
+version: 1.02
 author:
   - David A Golden <dagolden@cpan.org>
 abstract: |-
@@ -15,5 +15,5 @@ build_requires:
 provides:
   Exception::Class::TryCatch:
     file: lib/Exception/Class/TryCatch.pm
-    version: 1.01
-generated_by: Module::Build version 0.2606
+    version: 1.02
+generated_by: Module::Build version 0.2608
