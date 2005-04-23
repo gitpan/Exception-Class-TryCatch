@@ -7,7 +7,7 @@ use Exception::Class;
 BEGIN {
     use Exporter ();
     use vars qw ($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
-    $VERSION     = "1.02";
+    $VERSION     = "1.03";
     @ISA         = qw (Exporter);
     @EXPORT      = qw ( catch try caught );
     @EXPORT_OK   = ();
@@ -30,14 +30,19 @@ Exception::Class::TryCatch - Syntactic try/catch sugar for use with Exception::C
     
     eval { Exception::Class::Base->throw('error') };
     catch my $err and warn $err->error;
+
+    # catching only certain types or else rethrowing
+    
+    eval { Exception::Class::Base::SubClass->throw('error') };
+    catch( my $err, ['Exception::Class::Base', 'Other::Exception'] )
+        and warn $err->error; 
     
     # caught() is a synonym for catch()
     
     eval { Exception::Class::Base->throw('error') };
     if ( caught my $err ) {
-        if    ($err->isa('this') { warn "this: $err->error" }
-        elsif ($err->isa('that') { warn "that: $err->error" }
-        else                     { $err->rethrow }
+        $err->isa('this') and do { handle_this($err) };
+        $err->isa('that') and do { handle_that($err) };
     }
     
     # use "try eval" to push exceptions onto a stack to catch later
@@ -88,9 +93,15 @@ scope, avoiding closures altogether.
 
 =head2 C<catch, caught>
 
+    # zero argument form
     my $err = catch;
+
+    # one argument forms
     catch my $err;
-    caught my $err;
+    my $err = catch( [ 'Exception::Type', 'Exception::Other::Type' ] );
+
+    # two argument form
+    catch my $err, [ 'Exception::Type', 'Exception::Other::Type' ];
 
 Returns an C<Exception::Class::Base> object (or an object which is a 
 subclass of it) if an exception has been caught by C<eval> or else 
@@ -106,28 +117,57 @@ and wrapped likewise.  Such wrapping will likely result in confusing stack
 traces and the like, so any methods other than C<error> used on 
 C<Exception::Class::Base> objects caught should be used with caution.
 
-C<catch> is prototyped to take an optional scalar argument.  When passed a
-scalar variable, C<catch> will also set that variable to the same value
-returned.  This allows for the C<catch my $err> idiom without parentheses.
+C<catch> is prototyped to take up to two optional scalar arguments.  The single
+argument form has two variations.  
+
+=over
+
+=item *
+
+If the argument is a reference to an array,
+any exception caught that is not of the same type (or a subtype) of one
+of the classes listed in the array will be rethrown.  
+
+=item *
+
+If the argument is not a reference to an array, C<catch> 
+will set the argument to the same value that is returned. 
+This allows for the C<catch my $err> idiom without parentheses.
+
+=back
+
+In the two-argument form, the first argument is set to the same value as is
+returned.  The second argument must be an array reference and is handled 
+the same as as for the single argument version with an array reference, as
+given above.
 
 C<caught> is a synonym for C<catch> for syntactic convenience.
 
 =cut
 
-sub catch(;$) {
+sub catch(;$$) {
     my $e;
     my $err = @error_stack ? pop @error_stack : $@;
     if ($err eq '') {
-            $e = undef;
+        $e = undef;
     }
-    elsif ( UNIVERSAL::isa ($err, 'Exception::Class::Base' ) ) {
+    elsif ( UNIVERSAL::isa($err, 'Exception::Class::Base' ) ) {
         $e = $err;
     } 
     else {
         # use error message or hope something stringifies
         $e = Exception::Class::Base->new( "$err" );
     }
-    return $_[0] = $e;
+    unless ( ref($_[0]) eq 'ARRAY' ) { 
+        $_[0] = $e;
+        shift;
+    }
+    if ($e) {
+        if ( defined($_[0]) and ref($_[0]) eq 'ARRAY' ) {
+            $e->rethrow() unless grep { $e->isa($_) } @{$_[0]};
+        }
+    }
+    return $e;
 }
 
 *caught = \&catch;

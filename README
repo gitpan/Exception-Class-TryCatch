@@ -9,14 +9,19 @@ SYNOPSIS
     
         eval { Exception::Class::Base->throw('error') };
         catch my $err and warn $err->error;
+
+        # catching only certain types or else rethrowing
+    
+        eval { Exception::Class::Base::SubClass->throw('error') };
+        catch( my $err, ['Exception::Class::Base', 'Other::Exception'] )
+            and warn $err->error; 
     
         # caught() is a synonym for catch()
     
         eval { Exception::Class::Base->throw('error') };
         if ( caught my $err ) {
-            if    ($err->isa('this') { warn "this: $err->error" }
-            elsif ($err->isa('that') { warn "that: $err->error" }
-            else                     { $err->rethrow }
+            $err->isa('this') and do { handle_this($err) };
+            $err->isa('that') and do { handle_that($err) };
         }
     
         # use "try eval" to push exceptions onto a stack to catch later
@@ -60,9 +65,15 @@ DESCRIPTION
 
 USAGE
   "catch, caught"
+        # zero argument form
         my $err = catch;
+
+        # one argument forms
         catch my $err;
-        caught my $err;
+        my $err = catch( [ 'Exception::Type', 'Exception::Other::Type' ] );
+
+        # two argument form
+        catch my $err, [ 'Exception::Type', 'Exception::Other::Type' ];
 
     Returns an "Exception::Class::Base" object (or an object which is a
     subclass of it) if an exception has been caught by "eval" or else
@@ -79,9 +90,21 @@ USAGE
     "error" used on "Exception::Class::Base" objects caught should be used
     with caution.
 
-    "catch" is prototyped to take an optional scalar argument. When passed a
-    scalar variable, "catch" will also set that variable to the same value
-    returned. This allows for the "catch my $err" idiom without parentheses.
+    "catch" is prototyped to take up to two optional scalar arguments. The
+    single argument form has two variations.
+
+    *   If the argument is a reference to an array, any exception caught
+        that is not of the same type (or a subtype) of one of the classes
+        listed in the array will be rethrown.
+
+    *   If the argument is not a reference to an array, "catch" will set the
+        argument to the same value that is returned. This allows for the
+        "catch my $err" idiom without parentheses.
+
+    In the two-argument form, the first argument is set to the same value as
+    is returned. The second argument must be an array reference and is
+    handled the same as as for the single argument version with an array
+    reference, as given above.
 
     "caught" is a synonym for "catch" for syntactic convenience.
 

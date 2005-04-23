@@ -5,13 +5,11 @@ use blib;
 
 # Exception::Class::TryCatch  
 
-use Test::More tests =>  37 ;
+use Test::More tests =>  42 ;
 use Test::Exception;
 
-BEGIN { 
-    use_ok( 'Exception::Class::TryCatch' );
-    use_ok( 'Exception::Class', 'My::Exception::Class' );
-}
+use Exception::Class::TryCatch;
+use Exception::Class 'My::Exception::Class', 'My::Other::Exception';
 
 my $e;
 
@@ -156,4 +154,62 @@ for my $out ( 0, 1 ) {
 		}
 	}
 }
+
+#--------------------------------------------------------------------------#    
+# Test catch rethrowing unless a list is matched -- one argument version
+#--------------------------------------------------------------------------#
+
+{
+
+    try eval { 
+        try eval { My::Exception::Class->throw( "error" ) };
+        $err = catch( ['My::Other::Exception'] ); 
+        diag( "Shouldn't be here because \$err is a " . 
+               ref($err) . " not a My::Other::Exception." );
+    };
+
+    catch $outer_err;
+}
+ok( UNIVERSAL::isa($outer_err, 'My::Exception::Class'), 
+    "catch not matching list should rethrow -- single arg version");
+
+lives_ok { 
+    eval { My::Exception::Class->throw( "error" ) };
+    $err = catch( ['My::Exception::Class'] ); 
+} "catch matching list lives -- single arg version";
+
+eval { 1 };
+$e = catch ['My::Exception::Class'];
+is ( $e, undef, 
+    "catch returns undef if no error -- single arg version" );
+
+#--------------------------------------------------------------------------#    
+# Test catch rethrowing unless a list is matched -- two argument version
+#--------------------------------------------------------------------------#
+
+{
+
+    try eval { 
+        try eval { My::Exception::Class->throw( "error" ) };
+        catch( $err, ['My::Other::Exception'] ); 
+        diag( "Shouldn't be here unless " . 
+               ref($err) . " is a My::Other::Exception." );
+    };
+
+    catch $outer_err;
+}
+ok( UNIVERSAL::isa($outer_err, 'My::Exception::Class'), 
+    "catch not matching list should rethrow -- two arg version");
+
+lives_ok { 
+    eval { My::Exception::Class->throw( "error" ) };
+    catch( $err, ['My::Exception::Class'] ); 
+} "catch matching list lives -- two arg version";
+
+eval { 1 };
+$e = catch $err, ['My::Exception::Class'];
+is ( $e, undef, 
+    "catch returns undef if no error -- two arg version" );
+is ( $err, undef, 
+    "catch undefs a passed error variable if no error -- two arg version");
 
