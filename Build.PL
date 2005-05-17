@@ -3,7 +3,7 @@ use Module::Build;
 
 Module::Build->new
     ( module_name     => 'Exception::Class::TryCatch',
-      create_makefile_pl => 'passthrough',
+      create_makefile_pl => 'traditional',
       create_readme => 1,
       license         => 'perl',	  
       requires        => {

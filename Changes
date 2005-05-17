@@ -1,5 +1,8 @@
 Revision history for Perl module Exception::Class::TryCatch
 
+1.04 Mon May 16 23:20:23 EDT 2005
+    - changed Module::Build makefile support to 'traditional' (Perrin)
+
 1.03 Sat Apr 23 09:03:00 EDT 2005
     - catch rethrows if optional list of class types isn't matched
     - added support for both one- and two-arguments forms of catch
