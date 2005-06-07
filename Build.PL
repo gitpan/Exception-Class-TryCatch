@@ -6,12 +6,14 @@ Module::Build->new
       create_makefile_pl => 'traditional',
       create_readme => 1,
       license         => 'perl',	  
-      requires        => {
+      requires => {
           perl => 5.005,
-          Exception::Class => 1.19,
+          Exception::Class => 1.20,
       },
-	  build_requires  => { 
-          Test::More => 0.54,
-          Test::Exception => 0.19,
+      build_requires => {
+          Test::Exception => 0.20,
+          Test::More => 0.6, # (0.41 since perl 5.007003, 0.6 is new)
+          Test::Pod => 1.20,
+          Test::Pod::Coverage => 1.06,
       },
 	)->create_build_script;

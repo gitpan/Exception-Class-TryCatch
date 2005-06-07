@@ -5,9 +5,11 @@ WriteMakefile
           'NAME' => 'Exception::Class::TryCatch',
           'VERSION_FROM' => 'lib/Exception/Class/TryCatch.pm',
           'PREREQ_PM' => {
-                           'Exception::Class' => '1.19',
-                           'Test::Exception' => '0.19',
-                           'Test::More' => '0.54'
+                           'Exception::Class' => '1.2',
+                           'Test::Exception' => '0.2',
+                           'Test::More' => '0.6',
+                           'Test::Pod' => '1.2',
+                           'Test::Pod::Coverage' => '1.06'
                          },
           'INSTALLDIRS' => 'site',
           'PL_FILES' => {}

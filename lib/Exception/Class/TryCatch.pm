@@ -7,7 +7,7 @@ use Exception::Class;
 BEGIN {
     use Exporter ();
     use vars qw ($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
-    $VERSION     = "1.04";
+    $VERSION     = "1.05";
     @ISA         = qw (Exporter);
     @EXPORT      = qw ( catch try caught );
     @EXPORT_OK   = ();
