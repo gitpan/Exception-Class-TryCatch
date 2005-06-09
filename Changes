@@ -1,5 +1,8 @@
 Revision history for Perl module Exception::Class::TryCatch
 
+1.06 Wed Jun  8 12:02:24 EDT 2005
+    - removed pod/coverage tests to minimize dependencies for Activestate
+
 1.05 Tue Jun  7 17:34:32 EDT 2005
     - updated Build.PL to include build dependencies
 

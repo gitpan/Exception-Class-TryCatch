@@ -1,6 +1,6 @@
 ---
 name: Exception-Class-TryCatch
-version: 1.05
+version: 1.06
 author:
   - David A Golden <dagolden@cpan.org>
 abstract: Syntactic try/catch sugar for use with Exception::Class
@@ -11,10 +11,8 @@ requires:
 build_requires:
   Test::Exception: 0.2
   Test::More: 0.6
-  Test::Pod: 1.2
-  Test::Pod::Coverage: 1.06
 provides:
   Exception::Class::TryCatch:
     file: lib/Exception/Class/TryCatch.pm
-    version: 1.05
-generated_by: Module::Build version 0.2608
+    version: 1.06
+generated_by: Module::Build version 0.2701
