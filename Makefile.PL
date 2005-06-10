@@ -7,7 +7,7 @@ WriteMakefile
           'PREREQ_PM' => {
                            'Exception::Class' => '1.2',
                            'Test::Exception' => '0.2',
-                           'Test::More' => '0.6'
+                           'Test::More' => '0.47'
                          },
           'INSTALLDIRS' => 'site',
           'EXE_FILES' => [],
