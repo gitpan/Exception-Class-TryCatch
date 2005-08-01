@@ -35,36 +35,37 @@ SYNOPSIS
   
 DESCRIPTION
     Exception::Class::TryCatch provides syntactic sugar for use with
-    Exception::Class using the familiar keywords "try" and "catch". Its
-    primary objective is to allow users to avoid dealing directly with $@ by
-    ensuring that any exceptions caught in an "eval" are captured as
+    Exception::Class using the familiar keywords `try' and `catch'. Its
+    primary objective is to allow users to avoid dealing directly with `$@'
+    by ensuring that any exceptions caught in an `eval' are captured as
     Exception::Class objects, whether they were thrown objects to begin with
-    or whether the error resulted from "die". This means that users may
-    immediately use "isa" and various Exception::Class methods to process
+    or whether the error resulted from `die'. This means that users may
+    immediately use `isa' and various Exception::Class methods to process
     the exception.
 
     In addition, this module provides for a method to push errors onto a
-    hidden error stack immediately after an "eval" so that cleanup code or
-    other error handling may also call "eval" without the original error in
-    $@ being lost.
+    hidden error stack immediately after an `eval' so that cleanup code or
+    other error handling may also call `eval' without the original error in
+    `$@' being lost.
 
     Inspiration for this module is due in part to Dave Rolsky's article
     "Exception Handling in Perl With Exception::Class" in *The Perl Journal*
     (Rolsky 2004).
 
-    The "try/catch" syntax used in this module does not use code reference
+    The `try/catch' syntax used in this module does not use code reference
     prototypes the way the Error.pm module does, but simply provides some
-    helpful functionality when used in combination with "eval". As a result,
+    helpful functionality when used in combination with `eval'. As a result,
     it avoids the complexity and dangers involving nested closures and
     memory leaks inherent in Error.pm (Perrin 2003).
 
     Rolsky (2004) notes that these memory leaks may not occur in recent
     versions of Perl, but the approach used in Exception::Class::TryCatch
     should be safe for all versions of Perl as it leaves all code execution
-    to the "eval" in the current scope, avoiding closures altogether.
+    to the `eval' in the current scope, avoiding closures altogether.
 
 USAGE
-  "catch, caught"
+  `catch, caught'
+
         # zero argument form
         my $err = catch;
 
@@ -75,40 +76,41 @@ USAGE
         # two argument form
         catch my $err, [ 'Exception::Type', 'Exception::Other::Type' ];
 
-    Returns an "Exception::Class::Base" object (or an object which is a
-    subclass of it) if an exception has been caught by "eval" or else
-    returns "undef" if no error exists. The exception is either popped from
-    a hidden error stack (see "try") or, if the stack is empty, taken from
-    the current value of $@.
+    Returns an `Exception::Class::Base' object (or an object which is a
+    subclass of it) if an exception has been caught by `eval' or else
+    returns `undef' if no error exists. The exception is either popped from
+    a hidden error stack (see `try') or, if the stack is empty, taken from
+    the current value of `$@'.
 
-    If the exception is not an "Exception::Class::Base" object (or subclass
-    object), an "Exception::Class::Base" object will be created using the
-    string contents of the exception. This means that calls to "die" will be
+    If the exception is not an `Exception::Class::Base' object (or subclass
+    object), an `Exception::Class::Base' object will be created using the
+    string contents of the exception. This means that calls to `die' will be
     wrapped and may be treated as exception objects. Other objects caught
     will be stringfied and wrapped likewise. Such wrapping will likely
     result in confusing stack traces and the like, so any methods other than
-    "error" used on "Exception::Class::Base" objects caught should be used
+    `error' used on `Exception::Class::Base' objects caught should be used
     with caution.
 
-    "catch" is prototyped to take up to two optional scalar arguments. The
+    `catch' is prototyped to take up to two optional scalar arguments. The
     single argument form has two variations.
 
     *   If the argument is a reference to an array, any exception caught
         that is not of the same type (or a subtype) of one of the classes
         listed in the array will be rethrown.
 
-    *   If the argument is not a reference to an array, "catch" will set the
+    *   If the argument is not a reference to an array, `catch' will set the
         argument to the same value that is returned. This allows for the
-        "catch my $err" idiom without parentheses.
+        `catch my $err' idiom without parentheses.
 
     In the two-argument form, the first argument is set to the same value as
     is returned. The second argument must be an array reference and is
     handled the same as as for the single argument version with an array
     reference, as given above.
 
-    "caught" is a synonym for "catch" for syntactic convenience.
+    `caught' is a synonym for `catch' for syntactic convenience.
 
-  "try"
+  `try'
+
         try eval {
           #dangerous code
         };
@@ -117,29 +119,29 @@ USAGE
         $rv = try eval { return $scalar };
         @rv = try [ eval { return @array } ];
     
-    Pushes the current error ($@) onto a hidden error stack for later use by
-    "catch". "try" uses a prototype that expects a single scalar so that it
-    can be used with eval without parentheses. As "eval { BLOCK }" is an
-    argument to try, it will be evaluated just prior to "try", ensuring that
-    "try" captures the correct error status. "try" does not itself handle
-    any errors -- it merely records the results of "eval". "try { BLOCK }"
+    Pushes the current error (`$@') onto a hidden error stack for later use
+    by `catch'. `try' uses a prototype that expects a single scalar so that
+    it can be used with eval without parentheses. As `eval { BLOCK }' is an
+    argument to try, it will be evaluated just prior to `try', ensuring that
+    `try' captures the correct error status. `try' does not itself handle
+    any errors -- it merely records the results of `eval'. `try { BLOCK }'
     will be interpreted as passing a hash reference and will (probably) not
     compile. (And if it does, it will result in very unexpected behavior.)
 
-    Since "try" requires a single argument, "eval" will normally be called
-    in scalar context. To use "eval" in list context with "try", put the
-    call to "eval" in an anonymous array:
+    Since `try' requires a single argument, `eval' will normally be called
+    in scalar context. To use `eval' in list context with `try', put the
+    call to `eval' in an anonymous array:
 
       @rv = try [ eval {return @array} ];
 
-    When "try" is called in list context, if the argument to "try" is an
-    array reference, "try" will dereference the array and return the
-    resulting list, In scalar context, of course, "try" passes through the
-    scalar value returned by "eval" -- even if that is an array reference --
+    When `try' is called in list context, if the argument to `try' is an
+    array reference, `try' will dereference the array and return the
+    resulting list, In scalar context, of course, `try' passes through the
+    scalar value returned by `eval' -- even if that is an array reference --
     without modifications.
 
-    When using "try" in a compound idioms like the following, be sure that
-    the "eval" returns a true value:
+    When using `try' in a compound idioms like the following, be sure that
+    the `eval' returns a true value:
 
         try eval {
          # code
@@ -149,10 +151,10 @@ USAGE
         };
         catch my $err;
  
-    "try" must always be properly bracketed with a matching "catch" or
-    unexpected behavior may result when "catch" pops the error off of the
-    stack. "try" executes right after its "eval", so inconsistent usage of
-    "try" like the following will work as expected:
+    `try' must always be properly bracketed with a matching `catch' or
+    unexpected behavior may result when `catch' pops the error off of the
+    stack. `try' executes right after its `eval', so inconsistent usage of
+    `try' like the following will work as expected:
 
         try eval {
             eval { die "inner" };
@@ -172,12 +174,12 @@ USAGE
         catch my $outer_err;
         # handle $outer_err;
     
-    This code will appear to run correctly, but "catch" gets the exception
-    from the inner "try", not the outer one, and there will still be an
-    exception on the error stack which will be caught by the next "catch" in
+    This code will appear to run correctly, but `catch' gets the exception
+    from the inner `try', not the outer one, and there will still be an
+    exception on the error stack which will be caught by the next `catch' in
     the program, causing unexpected (and likely hard to track) behavior.
 
-    In short, if you use "try", you must "catch". The problem code above
+    In short, if you use `try', you must `catch'. The problem code above
     should be rewritten as:
 
         try eval {

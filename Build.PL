@@ -9,9 +9,9 @@ Module::Build->new
       requires => {
           perl => 5.005,
           Exception::Class => 1.20,
+          Test::Exception => 0.20,
+          Test::More => 0.48,
       },
       build_requires => {
-          Test::Exception => 0.20,
-          Test::More => 0.47,
       },
 	)->create_build_script;

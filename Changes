@@ -1,5 +1,8 @@
 Revision history for Perl module Exception::Class::TryCatch
 
+1.08 Mon Aug  1 09:29:00 EDT 2005
+    - moved build_requires to requires for CPANPLUS bug workaround
+
 1.07 Fri Jun 10 11:30:02 EDT 2005
     - reduced Test::More required version to 0.47
 
