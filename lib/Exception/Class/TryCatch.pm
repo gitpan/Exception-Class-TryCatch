@@ -7,10 +7,10 @@ use Exception::Class;
 BEGIN {
     use Exporter ();
     use vars qw ($VERSION @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS);
-    $VERSION     = "1.08";
+    $VERSION     = "1.09";
     @ISA         = qw (Exporter);
-    @EXPORT      = qw ( catch try caught );
-    @EXPORT_OK   = ();
+    @EXPORT      = qw ( catch try );
+    @EXPORT_OK   = qw ( caught );
     %EXPORT_TAGS = ();
 }
 
@@ -37,10 +37,10 @@ Exception::Class::TryCatch - Syntactic try/catch sugar for use with Exception::C
     catch( my $err, ['Exception::Class::Base', 'Other::Exception'] )
         and warn $err->error; 
     
-    # caught() is a synonym for catch()
+    # catching and handling different types of errors
     
     eval { Exception::Class::Base->throw('error') };
-    if ( caught my $err ) {
+    if ( catch my $err ) {
         $err->isa('this') and do { handle_this($err) };
         $err->isa('that') and do { handle_that($err) };
     }
@@ -49,10 +49,11 @@ Exception::Class::TryCatch - Syntactic try/catch sugar for use with Exception::C
     
     try eval { 
         Exception::Class::Base->throw('error') 
-    } and do {
+    };
+    do {
         # cleanup that might use "try/catch" again
     };
-    catch my $err;
+    catch my $err; # catches a matching "try"
   
 =head1 DESCRIPTION
 
@@ -88,10 +89,10 @@ scope, avoiding closures altogether.
 =cut
 
 #--------------------------------------------------------------------------#
-# catch()/caught()
+# catch()
 #--------------------------------------------------------------------------#
 
-=head2 C<catch, caught>
+=head2 C<catch>
 
     # zero argument form
     my $err = catch;
@@ -141,7 +142,18 @@ returned.  The second argument must be an array reference and is handled
 the same as as for the single argument version with an array reference, as
 given above.
 
+=head2 C<caught> (DEPRECATED)
+
 C<caught> is a synonym for C<catch> for syntactic convenience.
+
+NOTE: Exception::Class version 1.21 added a "caught" method of its own.  It
+provides somewhat similar functionality to this subroutine, but with very
+different semantics.  As this class is intended to work closely with
+Exception::Class, the existence of a subroutine and a method with the same name
+is liable to cause confusion and this method is deprecated and may be removed
+in future releases of Exception::Class::TryCatch.
+
+This method is no longer exported by default.
 
 =cut
 
@@ -178,14 +190,21 @@ sub catch(;$$) {
 
 =head2 C<try>
 
+    # void context
     try eval {
-      #dangerous code
+      # dangerous code
+    };
+    do {
+      # cleanup code can use try/catch
     };
     catch my $err;
  
+    # scalar context
     $rv = try eval { return $scalar };
+
+    # list context
     @rv = try [ eval { return @array } ];
-    
+
 Pushes the current error (C<$@>) onto a hidden error stack for later use by
 C<catch>.  C<try> uses a prototype that expects a single scalar so that it can
 be used with eval without parentheses.  As C<eval { BLOCK }> is an argument
@@ -202,21 +221,17 @@ call to C<eval> in an anonymous array:
   @rv = try [ eval {return @array} ];
 
 When C<try> is called in list context, if the argument to C<try> is an array
-reference, C<try> will dereference the array and return the resulting list,
-In scalar context, of course, C<try> passes through the scalar value returned
-by C<eval> -- even if that is an array reference -- without modifications.
+reference, C<try> will dereference the array and return the resulting list.
 
-When using C<try> in a compound idioms like the following, be sure that
-the C<eval> returns a true value:
+In scalar context, C<try> passes through the scalar value returned
+by C<eval> without modifications -- even if that is an array reference.
 
-    try eval {
-     # code
-     1;
-    } and do {
-     # cleanup
-    };
-    catch my $err;
- 
+  $rv = try eval { return $scalar };
+  $rv = try eval { return [ qw( anonymous array ) ] };
+
+Of course, if the eval throws an exception, C<eval> and thus C<try> will return
+undef.
+
 C<try> must always be properly bracketed with a matching C<catch> or unexpected
 behavior may result when C<catch> pops the error off of the stack.  C<try> 
 executes right after its C<eval>, so inconsistent usage of C<try> like the
@@ -245,8 +260,8 @@ from the inner C<try>, not the outer one, and there will still be an exception
 on the error stack which will be caught by the next C<catch> in the program, 
 causing unexpected (and likely hard to track) behavior.
 
-In short, if you use C<try>, you must C<catch>.  The problem code above should
-be rewritten as:
+In short, if you use C<try>, you must have a matching C<catch>.  The problem
+code above should be rewritten as:
 
     try eval {
         try eval { die "inner" };

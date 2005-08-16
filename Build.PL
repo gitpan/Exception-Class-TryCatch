@@ -9,7 +9,7 @@ Module::Build->new
       requires => {
           perl => 5.005,
           Exception::Class => 1.20,
-          Test::Exception => 0.20,
+          Test::Exception => 0.21,
           Test::More => 0.48,
       },
       build_requires => {

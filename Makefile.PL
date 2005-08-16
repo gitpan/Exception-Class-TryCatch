@@ -2,15 +2,15 @@
 use ExtUtils::MakeMaker;
 WriteMakefile
 (
+          'PL_FILES' => {},
+          'INSTALLDIRS' => 'site',
           'NAME' => 'Exception::Class::TryCatch',
+          'EXE_FILES' => [],
           'VERSION_FROM' => 'lib/Exception/Class/TryCatch.pm',
           'PREREQ_PM' => {
+                           'Test::More' => '0.48',
                            'Exception::Class' => '1.2',
-                           'Test::Exception' => '0.2',
-                           'Test::More' => '0.48'
-                         },
-          'INSTALLDIRS' => 'site',
-          'EXE_FILES' => [],
-          'PL_FILES' => {}
+                           'Test::Exception' => '0.21'
+                         }
         )
 ;

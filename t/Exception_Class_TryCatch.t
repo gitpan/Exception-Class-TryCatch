@@ -8,7 +8,7 @@ use blib;
 use Test::More tests =>  42 ;
 use Test::Exception;
 
-use Exception::Class::TryCatch;
+use Exception::Class::TryCatch qw( try catch caught );
 use Exception::Class 'My::Exception::Class', 'My::Other::Exception';
 
 my $e;

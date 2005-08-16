@@ -16,10 +16,10 @@ SYNOPSIS
         catch( my $err, ['Exception::Class::Base', 'Other::Exception'] )
             and warn $err->error; 
     
-        # caught() is a synonym for catch()
+        # catching and handling different types of errors
     
         eval { Exception::Class::Base->throw('error') };
-        if ( caught my $err ) {
+        if ( catch my $err ) {
             $err->isa('this') and do { handle_this($err) };
             $err->isa('that') and do { handle_that($err) };
         }
@@ -28,10 +28,11 @@ SYNOPSIS
     
         try eval { 
             Exception::Class::Base->throw('error') 
-        } and do {
+        };
+        do {
             # cleanup that might use "try/catch" again
         };
-        catch my $err;
+        catch my $err; # catches a matching "try"
   
 DESCRIPTION
     Exception::Class::TryCatch provides syntactic sugar for use with
@@ -64,7 +65,7 @@ DESCRIPTION
     to the `eval' in the current scope, avoiding closures altogether.
 
 USAGE
-  `catch, caught'
+  `catch'
 
         # zero argument form
         my $err = catch;
@@ -107,18 +108,36 @@ USAGE
     handled the same as as for the single argument version with an array
     reference, as given above.
 
+  `caught' (DEPRECATED)
+
     `caught' is a synonym for `catch' for syntactic convenience.
+
+    NOTE: Exception::Class version 1.21 added a "caught" method of its own.
+    It provides somewhat similar functionality to this subroutine, but with
+    very different semantics. As this class is intended to work closely with
+    Exception::Class, the existence of a subroutine and a method with the
+    same name is liable to cause confusion and this method is deprecated and
+    may be removed in future releases of Exception::Class::TryCatch.
+
+    This method is no longer exported by default.
 
   `try'
 
+        # void context
         try eval {
-          #dangerous code
+          # dangerous code
+        };
+        do {
+          # cleanup code can use try/catch
         };
         catch my $err;
  
+        # scalar context
         $rv = try eval { return $scalar };
+
+        # list context
         @rv = try [ eval { return @array } ];
-    
+
     Pushes the current error (`$@') onto a hidden error stack for later use
     by `catch'. `try' uses a prototype that expects a single scalar so that
     it can be used with eval without parentheses. As `eval { BLOCK }' is an
@@ -136,21 +155,17 @@ USAGE
 
     When `try' is called in list context, if the argument to `try' is an
     array reference, `try' will dereference the array and return the
-    resulting list, In scalar context, of course, `try' passes through the
-    scalar value returned by `eval' -- even if that is an array reference --
-    without modifications.
+    resulting list.
 
-    When using `try' in a compound idioms like the following, be sure that
-    the `eval' returns a true value:
+    In scalar context, `try' passes through the scalar value returned by
+    `eval' without modifications -- even if that is an array reference.
 
-        try eval {
-         # code
-         1;
-        } and do {
-         # cleanup
-        };
-        catch my $err;
- 
+      $rv = try eval { return $scalar };
+      $rv = try eval { return [ qw( anonymous array ) ] };
+
+    Of course, if the eval throws an exception, `eval' and thus `try' will
+    return undef.
+
     `try' must always be properly bracketed with a matching `catch' or
     unexpected behavior may result when `catch' pops the error off of the
     stack. `try' executes right after its `eval', so inconsistent usage of
@@ -179,8 +194,8 @@ USAGE
     exception on the error stack which will be caught by the next `catch' in
     the program, causing unexpected (and likely hard to track) behavior.
 
-    In short, if you use `try', you must `catch'. The problem code above
-    should be rewritten as:
+    In short, if you use `try', you must have a matching `catch'. The
+    problem code above should be rewritten as:
 
         try eval {
             try eval { die "inner" };
