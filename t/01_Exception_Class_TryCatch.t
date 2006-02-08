@@ -1,12 +1,7 @@
-#!/usr/bin/perl
-use strict;
-use warnings;
-use blib;  
-
 # Exception::Class::TryCatch  
+use strict;
 
 use Test::More tests =>  42 ;
-use Test::Exception;
 
 use Exception::Class::TryCatch qw( try catch caught );
 use Exception::Class 'My::Exception::Class', 'My::Other::Exception';
@@ -173,10 +168,11 @@ for my $out ( 0, 1 ) {
 ok( UNIVERSAL::isa($outer_err, 'My::Exception::Class'), 
     "catch not matching list should rethrow -- single arg version");
 
-lives_ok { 
+eval { 
     eval { My::Exception::Class->throw( "error" ) };
     $err = catch( ['My::Exception::Class'] ); 
-} "catch matching list lives -- single arg version";
+};
+is( $@, q{}, "catch matching list lives -- single arg version");
 
 eval { 1 };
 $e = catch ['My::Exception::Class'];
@@ -201,10 +197,11 @@ is ( $e, undef,
 ok( UNIVERSAL::isa($outer_err, 'My::Exception::Class'), 
     "catch not matching list should rethrow -- two arg version");
 
-lives_ok { 
+eval { 
     eval { My::Exception::Class->throw( "error" ) };
     catch( $err, ['My::Exception::Class'] ); 
-} "catch matching list lives -- two arg version";
+};
+is( $@, q{}, "catch matching list lives -- two arg version" );
 
 eval { 1 };
 $e = catch $err, ['My::Exception::Class'];

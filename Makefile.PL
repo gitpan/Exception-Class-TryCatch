@@ -8,9 +8,8 @@ WriteMakefile
           'EXE_FILES' => [],
           'VERSION_FROM' => 'lib/Exception/Class/TryCatch.pm',
           'PREREQ_PM' => {
-                           'Test::More' => '0.48',
-                           'Exception::Class' => '1.2',
-                           'Test::Exception' => '0.21'
+                           'Test::More' => '0.45',
+                           'Exception::Class' => '1.2'
                          }
         )
 ;

@@ -7,5 +7,7 @@ MANIFEST			This list of files
 MANIFEST.SKIP
 META.yml
 README
-t/Exception_Class_TryCatch.t
+t/01_Exception_Class_TryCatch.t
+t/98_pod.t
+t/99_pod_coverage.t
 Todo
