@@ -8,7 +8,7 @@ Exception::Class::TryCatch - Syntactic tryE<sol>catch sugar for use with Excepti
 
 =head1 VERSION
 
-This documentation describes version 1.11.
+This documentation describes version 1.12.
 
 =head1 SYNOPSIS
 
@@ -86,11 +86,11 @@ scope, avoiding closures altogether.
      # two argument form
      catch my $err, [ 'Exception::Type', 'Exception::Other::Type' ];
 
-Returns an C<<< Exception::Class::Base >>> object (or an object which is a 
-subclass of it) if an exception has been caught by C<<< eval >>> or else 
-returns C<<< undef >>> if no error exists.  The exception is either popped
-from a hidden error stack (see C<<< try >>>) or, if the stack is empty, taken from
-the current value of C<<< $@ >>>.
+Returns an C<<< Exception::Class::Base >>> object (or an object which is a subclass of
+it) if an exception has been caught by C<<< eval >>>.  If no exception was thrown, it
+returns C<<< undef >>> in scalar context and an empty list in list context.   The
+exception is either popped from a hidden error stack (see C<<< try >>>) or, if the
+stack is empty, taken from the current value of C<<< $@ >>>.
 
 If the exception is not an C<<< Exception::Class::Base >>> object (or subclass
 object), an C<<< Exception::Class::Base >>> object will be created using the string
